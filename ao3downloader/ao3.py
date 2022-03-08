@@ -1,5 +1,5 @@
 """Download works from ao3."""
-
+from __future__ import annotations
 import os
 import requests
 import traceback
