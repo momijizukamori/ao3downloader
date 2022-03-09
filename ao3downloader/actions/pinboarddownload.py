@@ -1,3 +1,4 @@
+from __future__ import annotations
 import requests
 
 import ao3downloader.actions.globals as globals

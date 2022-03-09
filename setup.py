@@ -20,8 +20,9 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={"": "ao3downloader"},
-    packages=setuptools.find_packages(where="ao3downloader"),
+    #package_dir={"": "ao3downloader"},
+    packages=setuptools.find_packages(include=['ao3downloader*']),
+    # py_modules=["ao3downloader"],
     python_requires=">=3.7",
     install_requires=[
     'beautifulsoup4==4.9.3',

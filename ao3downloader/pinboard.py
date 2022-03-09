@@ -1,5 +1,5 @@
 """Logic to get bookmarks from pinboard."""
-
+from __future__ import annotations
 import xml.etree.ElementTree as ET
 
 from ao3downloader.repo import my_get
