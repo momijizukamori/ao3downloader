@@ -9,8 +9,9 @@ PREFIX = ''
 
 try:
     from google.colab import drive
-    PREFIX = '/content/drive'
-    drive.mount(PREFIX)
+    PREFIX = '/content/drive/MyDrive/ao3downloader'
+    drive.mount('/content/drive/')
+    print('Drive mounted')
 
     # Google doesn't have restrictions on length/characters in filenames
     def get_valid_filename(filename):
