@@ -232,7 +232,7 @@ def get_files_of_type(folder: str, filetypes: list[str]) -> list[dict[str, str]]
     return results
 
 
-def get_last_page_downloaded(fileops: FileOps) -> str:
+def get_last_page_downloaded(fileops: FileOps, prompt: bool = True) -> str:
     latest = None
     try:
         logs = fileops.load_logfile()
@@ -244,8 +244,11 @@ def get_last_page_downloaded(fileops: FileOps) -> str:
 
     link = None
     if latest:
-        print(strings.AO3_PROMPT_LAST_PAGE)
-        if input() == strings.PROMPT_YES:
+        if prompt:
+            print(strings.AO3_PROMPT_LAST_PAGE)
+            if input() == strings.PROMPT_YES:
+                link = latest['starting']
+        else:
             link = latest['starting']
 
     return link

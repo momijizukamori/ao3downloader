@@ -40,12 +40,12 @@ class FileOps:
             f.write(json.dumps(js))
 
 
-    def get_setting(self, setting: str):
+    def get_setting(self, setting: str, default: any = ''):
         js = self.get_settings_json()
         try:
             return js[setting]
         except:
-            return ''
+            return default
 
 
     def get_settings_json(self) -> dict:

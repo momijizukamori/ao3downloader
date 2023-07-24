@@ -4,5 +4,7 @@ __pycache__/
 *.pyc
 downloads/
 logs/
+build/
+dist/
 settings.json
 ignorelist.txt

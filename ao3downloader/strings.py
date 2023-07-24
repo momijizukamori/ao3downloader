@@ -46,25 +46,33 @@ ACTION_DESCRIPTION_CONFIGURE_IGNORELIST = 'configure ignore list (list of links 
 
 PINBOARD_PROMPT_API_TOKEN = 'please enter api token'
 PINBOARD_PROMPT_INCLUDE_UNREAD = 'do you want to include unread bookmarks? ({}/{})'.format(PROMPT_YES, PROMPT_NO)
+PINBOARD_LABEL_INCLUDE_UNREAD = 'Include unread bookmarks?'
 PINBOARD_PROMPT_DATE = 'do you want to get bookmarks only after a specific date? ({}/{})'.format(PROMPT_YES, PROMPT_NO)
 PINBOARD_PROMPT_ENTER_DATE = 'please enter the date formatted {}:'
 PINBOARD_INFO_GETTING_BOOKMARKS = 'getting bookmark urls from pinboard'
 PINBOARD_INFO_NUM_RETURNED = '{} bookmarks returned'
 
 AO3_PROMPT_LOGIN = 'do you want to log in to ao3? ({}/{})'.format(PROMPT_YES, PROMPT_NO)
+AO3_LABEL_LOGIN = 'Log in to ao3?'
 AO3_PROMPT_USERNAME = 'please enter username'
 AO3_PROMPT_PASSWORD = 'please enter password'
 AO3_PROMPT_USE_SAVED_DOWNLOAD_TYPES = 'use saved download type list? ({}/{})'.format(PROMPT_YES, PROMPT_NO)
 AO3_ACCEPTABLE_DOWNLOAD_TYPES = ['AZW3', 'EPUB', 'MOBI', 'PDF', 'HTML']
 AO3_PROMPT_DOWNLOAD_TYPE = 'please enter download type. choose from the following (case-sensitive):\n' + '\n'.join(AO3_ACCEPTABLE_DOWNLOAD_TYPES)
+AO3_LABEL_DOWNLOAD_TYPE = 'File types to download'
 AO3_PROMPT_DOWNLOAD_TYPES_COMPLETE = 'done entering file types? ({}/{})'.format(PROMPT_YES, PROMPT_NO)
 AO3_PROMPT_LINK = 'please enter link to ao3'
 AO3_PROMPT_LAST_PAGE = 'do you want to start downloading from the page you stopped on last time? ({}/{})'.format(PROMPT_YES, PROMPT_NO)
 AO3_PROMPT_PAGES = 'please enter page number to stop on. enter 0 to download all pages.'
+AO3_LABEL_PAGES = 'Page number to stop on (leave blank to get all pages)'
 AO3_PROMPT_IMAGES = 'do you want to download embedded images? (will be saved separately) ({}/{})'.format(PROMPT_YES, PROMPT_NO)
+AO3_LABEL_IMAGES = 'Download embedded images? (will be saved separately)'
 AO3_PROMPT_SERIES = 'do you want to get works from series links? ({}/{})'.format(PROMPT_YES, PROMPT_NO)
+AO3_LABEL_SERIES = 'Get works from series links?'
 AO3_PROMPT_METADATA = 'do you want to include work metadata? ({}/{})'.format(PROMPT_YES, PROMPT_NO)
+AO3_LABEL_METADATA = 'Include work metadata?'
 AO3_PROMPT_FILE_INPUT = 'please enter complete file path (including file extension) to file containing links to download (must be a text file with one link on each line)'
+AO3_LABEL_FILE_INPUT = 'File containing links to download (must be a text file with one link on each line)'
 AO3_INFO_LOGIN = 'logging in'
 AO3_INFO_DOWNLOADING = 'downloading works'
 AO3_INFO_FILE_TYPE = 'added {} to list of download types'
@@ -96,7 +104,13 @@ REDOWNLOAD_INFO_URLS = 'getting work urls'
 REDOWNLOAD_INFO_DONE = 'done getting work urls. {} urls found'
 
 IGNORELIST_INFO_INITIALIZED = f'{IGNORELIST_FILE_NAME} has been added to the main script folder. you can use this file to perma-skip downloading works or series that you know you don\'t want to download. to use this file open it in a text editor (the default text editor for Windows is called Notepad. on Mac, you can use TextEdit) and add the links you want to ignore, one on each line. these should be links to ao3 works or series. other links will be ignored. each link MUST begin with https://archiveofourown.org and be placed at the start of a new line. you may also *optionally* add a comment after each link. comments must begin with a SEMICOLON followed by a SPACE: `; ` and must not contain any newline characters (the entire comment must be on the same line as the link). otherwise, you can write anything you want in the comment. comments are for your personal reference only and are not used by the script.'
+IGNORELIST_INFO_INITIALIZED_GUI = f"""{IGNORELIST_FILE_NAME} has been added to the main script folder. Add the links you want to ignore, one on each line.
+These should be links to ao3 works or series. Other links will be ignored. Each link MUST begin with https://archiveofourown.org 
+and be placed at the start of a new line. you may also *optionally* add a comment after each link. comments must begin with a 
+SEMICOLON followed by a SPACE: `; ` and must not contain any newline characters (the entire comment must be on the same line as the link).
+otherwise, you can write anything you want in the comment. comments are for your personal reference only and are not used by the script."""
 IGNORELIST_PROMPT_CHECK_DELETED = 'do you want to check the log file for deleted links and add them to the ignore list automatically?'
+IGNORELIST_LABEL_CHECK_DELETED = 'Add deleted links to the ignore list automatically?'
 
 INFO_NO_LOG_FILE = 'no log file'
 INFO_NO_FOLDER = 'folder does not exist'
