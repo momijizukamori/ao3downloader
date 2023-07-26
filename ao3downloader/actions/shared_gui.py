@@ -6,14 +6,99 @@ from ao3downloader import strings
 from ao3downloader.fileio import FileOps
 from ao3downloader.actions.shared import get_last_page_downloaded
 
-def bool_widget(label, key, default = False, disabled = False):
-    def bool_handler(event, values, window):
-        if values:
-            window.metadata[key] = values.get(key, False)
-    return [[sg.Checkbox(label, default, k=key, disabled = disabled)]], bool_handler
+class Widget:
+    def __init__(self, key: str):
+        self.key = key
+    def handle(self, event, values, window):
+        pass
+    def render(self):
+        pass
 
-def series() -> bool:
-    return bool_widget(strings.AO3_LABEL_SERIES, 'series')
+class BoolWidget(Widget):
+    def __init__(self, key: str, label: str, default: bool = False, disabled: bool = False):
+        self.label = label
+        self.key = key
+        self.value = default
+        self.disabled = disabled
+
+    def handle(self, event, values, window):
+        if values:
+            self.value = values.get(self.key, False)
+
+    def render(self):
+        return [[sg.Checkbox(self.label, self.default, k=self.key, disabled = self.disabled)]]
+
+
+def images() -> BoolWidget:
+    return BoolWidget(strings.AO3_LABEL_IMAGES, 'images')
+
+
+def metadata() -> BoolWidget:
+    return BoolWidget(strings.AO3_LABEL_METADATA, 'metadata')
+
+
+def ignorelist_check_deleted() -> BoolWidget:
+    return BoolWidget(strings.IGNORELIST_LABEL_CHECK_DELETED, 'ignorelist_check_deleted')
+
+def series() -> BoolWidget:
+    return BoolWidget(strings.AO3_LABEL_SERIES, 'series')
+
+
+def pinboard_exclude() -> BoolWidget:
+    return BoolWidget(strings.PINBOARD_LABEL_INCLUDE_UNREAD, 'exclude_toread')
+
+
+def ao3_login(disabled = False) -> BoolWidget:
+    return BoolWidget(strings.AO3_LABEL_LOGIN, 'ao3_login', disabled=disabled)
+
+class FiletypeWidget(Widget):
+    def __init__(self, fileops: FileOps, label: str = strings.AO3_LABEL_DOWNLOAD_TYPE, prefix: str | None = None):
+        self.default = fileops.get_setting(strings.SETTING_FILETYPES)
+        self.avail = strings.AO3_ACCEPTABLE_DOWNLOAD_TYPES
+        if prefix:
+            self.prefix = prefix + "_"
+        else:
+            self.prefix = ''
+
+        self.key = self.prefix + 'filetypes'
+        self.label = label
+        self.value = []
+
+    def handle(self, event, values, window):
+        filetypes = []
+        if values:
+            for filetype in self.avail:
+                if values.get(f'{self.prefix}{filetype}', None):
+                    filetypes.append(filetype)
+            self.value = filetypes
+
+    def render(self):
+        filetype_checks = []
+        for filetype in self.avail:
+            is_checked = filetype in self.default
+            filetype_checks.append(sg.Checkbox(filetype, is_checked, key=f'{self.prefix}{filetype}'))
+
+        return [[sg.Frame(self.label, [filetype_checks])]]
+
+
+class PagesWidget(Widget):
+    def __init__(self):
+        super.__init__(self, 'pages')
+
+    def handle(self, event, values, window):
+        if values:
+            pages = values.get('pages', None)
+            try:
+                pages = int(pages)
+                if pages <= 0:
+                    pages = None
+            except:
+                pages = None
+            
+            self.value = pages
+
+    def render(self):
+        return [[sg.Input(key="pages", size=(4, 1)), sg.Text(strings.AO3_LABEL_PAGES)]]
 
 
 def link(fileops: FileOps) -> str:
@@ -31,34 +116,6 @@ def link(fileops: FileOps) -> str:
     return layout + [[sg.Text(strings.AO3_PROMPT_LINK), sg.Input(key='link', enable_events=True)]], handler
 
 
-def pages() -> int:
-    def handler(event, values, window):
-        if values:
-            pages = values.get('pages', None)
-            try:
-                pages = int(pages)
-                if pages <= 0:
-                    pages = None
-            except:
-                pages = None
-            
-            window.metadata['pages'] = pages
-
-    return [[sg.Input(key="pages", size=(4, 1)), sg.Text(strings.AO3_LABEL_PAGES)]], handler
-
-
-def images() -> bool:
-    return bool_widget(strings.AO3_LABEL_IMAGES, 'images')
-
-
-def metadata() -> bool:
-    return bool_widget(strings.AO3_LABEL_METADATA, 'metadata')
-
-
-def ignorelist_check_deleted() -> bool:
-    return bool_widget(strings.IGNORELIST_LABEL_CHECK_DELETED, 'ignorelist_check_deleted')
-
-
 def pinboard_date() -> datetime.datetime:
     print(strings.PINBOARD_PROMPT_DATE)
     getdate = True if input() == strings.PROMPT_YES else False
@@ -70,37 +127,6 @@ def pinboard_date() -> datetime.datetime:
     else:
         date = None
     return date
-
-
-def pinboard_exclude() -> bool:
-    return bool_widget(strings.PINBOARD_LABEL_INCLUDE_UNREAD, 'exclude_toread')
-
-
-
-def ao3_login(disabled = False) -> None:
-    return bool_widget(strings.AO3_LABEL_LOGIN, 'ao3_login', disabled=disabled)
-
-
-
-def download_types(fileops: FileOps, label: str = strings.AO3_LABEL_DOWNLOAD_TYPE, prefix: str = '') -> list[str]:
-    filetypes = fileops.get_setting(strings.SETTING_FILETYPES)
-    if prefix != '':
-        prefix = prefix + "_"
-
-    def filetype_handler(event, values, window):
-        filetypes = []
-        if values:
-            for filetype in strings.AO3_ACCEPTABLE_DOWNLOAD_TYPES:
-                if values.get(f'{prefix}{filetype}', None):
-                    filetypes.append(filetype)
-            window.metadata[f'{prefix}filetypes'] = filetypes
-
-    filetype_checks = []
-    for filetype in strings.AO3_ACCEPTABLE_DOWNLOAD_TYPES:
-        is_checked = filetype in filetypes
-        filetype_checks.append(sg.Checkbox(filetype, is_checked, key=f'{prefix}{filetype}'))
-
-    return [[sg.Frame(label, [filetype_checks])]], filetype_handler
 
 
 def back():
@@ -125,3 +151,5 @@ def handle_login(metadata, repo, force = False):
             print("Ao3 login successful!")
         except Exception as e:
             print(f'Error trying to login: {e}')  
+
+

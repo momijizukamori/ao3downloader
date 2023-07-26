@@ -18,8 +18,9 @@ class Repository:
             '/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36 +nianeyna@gmail.com'}
 
 
-    def __init__(self) -> None:
+    def __init__(self, log = print) -> None:
         self.session = requests.Session()
+        self.log = log
 
 
     def __enter__(self):
@@ -65,9 +66,9 @@ class Repository:
                 pause_time = 300 # default to 5 minutes in case there was a problem getting retry-after
             now = datetime.datetime.now()
             later = now + datetime.timedelta(0, pause_time)
-            print(strings.MESSAGE_TOO_MANY_REQUESTS.format(pause_time, now.strftime('%H:%M:%S'), later.strftime('%H:%M:%S')))
+            self.log(strings.MESSAGE_TOO_MANY_REQUESTS.format(pause_time, now.strftime('%H:%M:%S'), later.strftime('%H:%M:%S')))
             sleep(pause_time)
-            print(strings.MESSAGE_RESUMING)
+            self.log(strings.MESSAGE_RESUMING)
             return self.my_get(url)
     
         return response
