@@ -1,16 +1,16 @@
 from ao3downloader import strings
-from ao3downloader.actions.cli.CliAction import CliAction
+from ao3downloader.cli.CliAction import CliAction
 
-from ao3downloader.actions.base.ao3download import Ao3DownloadAction
-from ao3downloader.actions.base.enterlinks import EnterLinksAction
-from ao3downloader.actions.base.getlinks import GetLinksAction
-from ao3downloader.actions.base.ignorelist import IgnoreListAction
-from ao3downloader.actions.base.logvisualization import LogVisualizationAction
-from ao3downloader.actions.base.markedforlater import MarkedForLaterAction
-from ao3downloader.actions.base.pinboarddownload import PinboardDownloadAction
-from ao3downloader.actions.base.redownload import RedownloadAction
-from ao3downloader.actions.base.updatefics import UpdateFicsAction
-from ao3downloader.actions.base.updateseries import UpdateSeriesAction
+from ao3downloader.actions.ao3download import Ao3DownloadAction
+from ao3downloader.actions.enterlinks import EnterLinksAction
+from ao3downloader.actions.getlinks import GetLinksAction
+from ao3downloader.actions.ignorelist import IgnoreListAction
+from ao3downloader.actions.logvisualization import LogVisualizationAction
+from ao3downloader.actions.markedforlater import MarkedForLaterAction
+from ao3downloader.actions.pinboarddownload import PinboardDownloadAction
+from ao3downloader.actions.redownload import RedownloadAction
+from ao3downloader.actions.updatefics import UpdateFicsAction
+from ao3downloader.actions.updateseries import UpdateSeriesAction
 
 
 class Ao3DownloadCliAction(CliAction, Ao3DownloadAction):

@@ -1,10 +1,9 @@
 import datetime
 from urllib.parse import unquote
-import PySimpleGUI as sg
+from PySimpleGUI import Text, FileBrowse, Input, Button, Checkbox, Frame
 
 from ao3downloader import strings
 from ao3downloader.fileio import FileOps
-from ao3downloader.actions.shared import get_last_page_downloaded
 
 class Widget:
     def __init__(self, key: str):
@@ -15,7 +14,7 @@ class Widget:
         pass
 
 class BoolWidget(Widget):
-    def __init__(self, key: str, label: str, default: bool = False, disabled: bool = False):
+    def __init__(self, label: str, key: str, default: bool = False, disabled: bool = False):
         self.label = label
         self.key = key
         self.value = default
@@ -26,7 +25,7 @@ class BoolWidget(Widget):
             self.value = values.get(self.key, False)
 
     def render(self):
-        return [[sg.Checkbox(self.label, self.default, k=self.key, disabled = self.disabled)]]
+        return [[Checkbox(self.label, self.value, k=self.key, disabled = self.disabled)]]
 
 
 def images() -> BoolWidget:
@@ -76,9 +75,9 @@ class FiletypeWidget(Widget):
         filetype_checks = []
         for filetype in self.avail:
             is_checked = filetype in self.default
-            filetype_checks.append(sg.Checkbox(filetype, is_checked, key=f'{self.prefix}{filetype}'))
+            filetype_checks.append(Checkbox(filetype, is_checked, key=f'{self.prefix}{filetype}'))
 
-        return [[sg.Frame(self.label, [filetype_checks])]]
+        return [[Frame(self.label, [filetype_checks])]]
 
 
 class PagesWidget(Widget):
@@ -98,22 +97,34 @@ class PagesWidget(Widget):
             self.value = pages
 
     def render(self):
-        return [[sg.Input(key="pages", size=(4, 1)), sg.Text(strings.AO3_LABEL_PAGES)]]
+        return [[Input(key="pages", size=(4, 1)), Text(strings.AO3_LABEL_PAGES)]]
 
 
-def link(fileops: FileOps) -> str:
-    layout = []
-    link = get_last_page_downloaded(fileops, False)
-    def handler(event, values, window):
+# def link(fileops: FileOps) -> str:
+#     layout = []
+#     link = get_last_page_downloaded(fileops, False)
+#     def handler(event, values, window):
+#         if values:
+#             window.metadata['link'] = values.get('link', None)
+#             if values.get('prev_link', None):
+#                 window.metadata['link'] = link
+#             window.metadata['link_entered'] = len(values.get('link', '')) > 0
+#     if link:
+#         layout = layout + [[Checkbox("Use last saved link?", k='prev_link', enable_events=True)],[Text("Last saved link: "), Text(unquote(link))]]
+
+#     return layout + [[Text(strings.AO3_PROMPT_LINK), Input(key='link', enable_events=True)]], handler
+
+class FilePathWidget(Widget):
+    def __init__(self):
+        self.key = 'path'
+
+    def handle(self, event, values, window):
         if values:
-            window.metadata['link'] = values.get('link', None)
-            if values.get('prev_link', None):
-                window.metadata['link'] = link
-            window.metadata['link_entered'] = len(values.get('link', '')) > 0
-    if link:
-        layout = layout + [[sg.Checkbox("Use last saved link?", k='prev_link', enable_events=True)],[sg.Text("Last saved link: "), sg.Text(unquote(link))]]
+            self.value = values.get(self.key, False)
 
-    return layout + [[sg.Text(strings.AO3_PROMPT_LINK), sg.Input(key='link', enable_events=True)]], handler
+    def render(self):
+        return [[Text(strings.AO3_LABEL_FILE_INPUT)],
+              [Input(key=self.key, enable_events=True), FileBrowse(file_types=(('Text files', "*.txt"), ('All Files', '*.* *')))]]
 
 
 def pinboard_date() -> datetime.datetime:
@@ -129,27 +140,18 @@ def pinboard_date() -> datetime.datetime:
     return date
 
 
-def back():
-    return sg.Button("Back")
+def Back():
+    return Button("Back")
 
-def save(disabled = False):
-    return sg.Button("Save", disabled=disabled, key="save")
+def Ok():
+    return Button("Ok", key="OK")
 
-def output():
-    return sg.Multiline(size=(50, 10), key='output', disabled=True, write_only = True, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True, autoscroll=True, expand_x=True)
+def Save(disabled = False):
+    return Button("Save", disabled=disabled, key="save")
+
+# def output():
+#     return sg.Multiline(size=(50, 10), key='output', disabled=True, write_only = True, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True, autoscroll=True, expand_x=True)
 
 def can_login(values):
     return len(values.get("password", '')) > 0 and len(values.get("username", '')) > 0
-
-def handle_login(metadata, repo, force = False):
-    ao3_login = metadata.get('ao3_login', False)
-    if ao3_login or force:
-        username = metadata['username']
-        password = metadata['password']
-        try:
-            repo.login(username, password)
-            print("Ao3 login successful!")
-        except Exception as e:
-            print(f'Error trying to login: {e}')  
-
 

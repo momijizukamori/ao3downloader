@@ -1,10 +1,13 @@
+from typing import Callable, Iterator
 from ao3downloader.fileio import FileOps
 from ao3downloader.repo import Repository
-from ao3downloader import exceptions, parse_text, strings
+from ao3downloader.actions.BaseAction import BaseAction
+from ao3downloader import exceptions, strings
 import datetime
 import os
+from tqdm import tqdm
 
-class CliAction:
+class CliAction(BaseAction):
     def __init__(self) -> None:
         self.fileops = FileOps()
     
@@ -205,3 +208,11 @@ class CliAction:
                 self.fileops.save_setting(strings.SETTING_UPDATE_FILETYPES, filetypes)
                 return filetypes
 
+    def file_path(self) -> str:
+            self.log(strings.AO3_PROMPT_FILE_INPUT)
+            path = input()
+            return path
+    
+    def progress(self, callback: Callable[..., any], iterator: Iterator) -> None:
+        for i in tqdm(iterator):
+            callback(i)

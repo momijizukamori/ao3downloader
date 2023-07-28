@@ -11,7 +11,7 @@ from ao3downloader.repo import Repository
 
 
 class Ao3:
-    def __init__(self, repo: Repository, fileops: FileOps, filetypes: list[str], pages: int, series: bool, images: bool, mark: bool=False, log = print) -> None:
+    def __init__(self, repo: Repository, fileops: FileOps, filetypes: list[str], pages: int, series: bool, images: bool, mark: bool=False, output = print) -> None:
         self.repo = repo
         self.fileops = fileops
         self.filetypes = filetypes
@@ -19,7 +19,7 @@ class Ao3:
         self.series = series
         self.images = images
         self.mark = mark
-        self.log = log
+        self.output = output
 
 
     def download(self, link: str, visited: list[str]=None) -> None:
@@ -61,7 +61,7 @@ class Ao3:
         try:
             self.get_work_links_recursive(links_list, link, visited_series, metadata)
         except Exception as e:
-            self.log(strings.ERROR_LINKS_LIST)
+            self.output(strings.ERROR_LINKS_LIST)
             self.log_error({'message': strings.ERROR_LINKS_LIST}, e)
 
         return links_list
@@ -95,7 +95,7 @@ class Ao3:
                 link = parse_text.get_next_page(link)
                 pagenum = parse_text.get_page_number(link)
                 if self.pages and pagenum == self.pages + 1: break
-                self.log(strings.INFO_FINISHED_PAGE.format(str(pagenum - 1), str(pagenum)))
+                self.output(strings.INFO_FINISHED_PAGE.format(str(pagenum - 1), str(pagenum)))
         else:
             raise exceptions.InvalidLinkException(strings.ERROR_INVALID_LINK)
 
@@ -124,7 +124,7 @@ class Ao3:
                     link = parse_text.get_next_page(link)
                     pagenum = parse_text.get_page_number(link)
                     if self.pages and pagenum == self.pages + 1: break
-                    self.log(strings.INFO_FINISHED_PAGE.format(str(pagenum - 1), str(pagenum)))
+                    self.output(strings.INFO_FINISHED_PAGE.format(str(pagenum - 1), str(pagenum)))
         else:
             raise exceptions.InvalidLinkException(strings.ERROR_INVALID_LINK)
 

@@ -1,15 +1,15 @@
 import ao3downloader.strings as strings
 
-from ao3downloader.actions.cli import Ao3DownloadCliAction
-from ao3downloader.actions.cli import PinboardDownloadCliAction
-from ao3downloader.actions.cli import UpdateFicsCliAction
-from ao3downloader.actions.cli import RedownloadCliAction
-from ao3downloader.actions.cli import LogVisualizationCliAction
-from ao3downloader.actions.cli import UpdateSeriesCliAction
-from ao3downloader.actions.cli import GetLinksCliAction
-from ao3downloader.actions.cli import MarkedForLaterCliAction
-from ao3downloader.actions.cli import EnterLinksCliAction
-from ao3downloader.actions.cli import IgnoreListCliAction
+from ao3downloader.cli import Ao3DownloadCliAction
+from ao3downloader.cli import PinboardDownloadCliAction
+from ao3downloader.cli import UpdateFicsCliAction
+from ao3downloader.cli import RedownloadCliAction
+from ao3downloader.cli import LogVisualizationCliAction
+from ao3downloader.cli import UpdateSeriesCliAction
+from ao3downloader.cli import GetLinksCliAction
+from ao3downloader.cli import MarkedForLaterCliAction
+from ao3downloader.cli import EnterLinksCliAction
+from ao3downloader.cli import IgnoreListCliAction
 
 QUIT_ACTION = 'q'
 MENU_ACTION = 'd'
