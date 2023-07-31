@@ -1,97 +1,27 @@
-import csv
-import datetime
-import os
-import PySimpleGUI as sg
-
+from ao3downloader.actions.getlinks import GetLinksAction
+from ao3downloader.gui.GuiAction import GuiAction
 from ao3downloader import strings
-from ao3downloader.actions import shared, shared_gui
-from ao3downloader.ao3 import Ao3
-from ao3downloader.fileio import FileOps
-from ao3downloader.repo import Repository
+from ao3downloader.gui.shared_gui import PagesWidget, LinkWidget, ao3_login, metadata, series, Back, Ok
 
 
-def action():
-    with Repository() as repo:
-        fileops = FileOps()
+class GetLinksGuiAction(GuiAction, GetLinksAction):
+    key = 'l'
+    desc = strings.ACTION_DESCRIPTION_LINKS_ONLY
 
-        link = shared.link(fileops)
-        series = shared.series()
-        pages = shared.pages()
-        metatdata = shared.metadata()
+    def __init__(self, settings: dict):
+        super().__init__(settings, "Save links to file")
+        self.add_child(LinkWidget(self.fileops))
+        self.add_child(series())
+        self.add_child(metadata())
+        self.add_child(ao3_login())
+        self.add_child(PagesWidget())
 
-        shared.ao3_login(repo, fileops)
+    def buttons(self):
+        self.layout.append([Back(), Ok()])
 
-        ao3 = Ao3(repo, fileops, None, pages, series, False)
-        links = ao3.get_work_links(link, metatdata)
-
-        if metatdata:
-            flattened = [flatten_dict(k, v) for k, v in links.items()]
-            filename = f'links_{datetime.datetime.now().strftime("%m%d%Y%H%M%S")}.csv'
-            with open(os.path.join(strings.DOWNLOAD_FOLDER_NAME, filename), 'w', newline='', encoding='utf-8') as f:
-                keys = []
-                sample = flattened[0]
-                for key in sample: keys.append(key)
-                writer = csv.DictWriter(f, fieldnames=keys)
-                writer.writeheader()
-                for item in flattened:
-                    writer.writerow(item)
-        else:
-            filename = f'links_{datetime.datetime.now().strftime("%m%d%Y%H%M%S")}.txt'
-            with open(os.path.join(strings.DOWNLOAD_FOLDER_NAME, filename), 'w') as f:
-                for l in links:
-                    f.write(l + '\n')
-
-
-def flatten_dict(k: str, v: dict) -> dict:
-    v['link'] = k
-    return v
-
-def gui_action(metadata):
-    fileops = FileOps()
-    layout = []
-    handlers = []
-    disable_ao3 = not shared_gui.can_login(metadata)
-    for widget, handler in [shared_gui.ao3_login(disable_ao3), shared_gui.link(fileops), shared_gui.metadata(), shared_gui.series(), shared_gui.pages()]:
-        layout = layout + widget
-        handlers.append(handler)
-
-    layout = layout + [[shared_gui.output()],
-                    [shared_gui.back(), sg.OK(disabled=True)]]
-    window = sg.Window("Save links", layout, metadata=metadata, finalize=True)
-
-    def handler(event, values, window):
-        for widget_handler in handlers:
-            widget_handler(event, values, window)
-        
-        state = len(values["link"]) == 0 and len(window.metadata['link']) == 0
-        window['OK'].update(disabled=state)
-        
+    def handler(self, event, values, window):
+        if event == 'link' or event == 'use_prev':
+            state = len(self.link()) == 0
+            window['OK'].update(disabled=state)
         if event == 'OK':
-            with Repository() as repo:
-                fileops = FileOps()
-                pages = window.metadata['pages']
-                series = window.metadata['series']
-                link = window.metadata['link']
-                metatdata = window.metadata['metadata']
-                shared_gui.handle_login(window.metadata, repo)
-                ao3 = Ao3(repo, fileops, None, pages, series, False)
-                links = ao3.get_work_links(link, metatdata)
-
-                if metatdata:
-                    flattened = [flatten_dict(k, v) for k, v in links.items()]
-                    filename = f'links_{datetime.datetime.now().strftime("%m%d%Y%H%M%S")}.csv'
-                    with open(os.path.join(strings.DOWNLOAD_FOLDER_NAME, filename), 'w', newline='', encoding='utf-8') as f:
-                        keys = []
-                        sample = flattened[0]
-                        for key in sample: keys.append(key)
-                        writer = csv.DictWriter(f, fieldnames=keys)
-                        writer.writeheader()
-                        for item in flattened:
-                            writer.writerow(item)
-                else:
-                    filename = f'links_{datetime.datetime.now().strftime("%m%d%Y%H%M%S")}.txt'
-                    with open(os.path.join(strings.DOWNLOAD_FOLDER_NAME, filename), 'w') as f:
-                        for l in links:
-                            f.write(l + '\n')
-
-    return window, handler
+            self.action()

@@ -1,3 +1,26 @@
+
+from ao3downloader.actions.ignorelist import IgnoreListAction
+from ao3downloader.gui.GuiAction import GuiAction
+from ao3downloader import strings
+from ao3downloader.gui.shared_gui import ignorelist_check_deleted, Back, Save
+
+
+class IgnoreListGuiAction(GuiAction, IgnoreListAction):
+    key = 'i'
+    desc = strings.ACTION_DESCRIPTION_CONFIGURE_IGNORELIST
+
+    def __init__(self, settings: dict):
+        super().__init__(settings, "Update ignorelist")
+        self.add_child(ignorelist_check_deleted())
+
+
+    def buttons(self):
+        self.layout.append([Back(), Save()])
+
+    def handler(self, event, values, window):
+        if event == 'OK':
+            self.action()
+
 from ao3downloader import strings
 from ao3downloader.actions import shared, shared_gui
 from ao3downloader.fileio import FileOps

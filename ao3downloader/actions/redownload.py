@@ -51,5 +51,4 @@ class RedownloadAction:
 
             ao3 = Ao3(repo, self.fileops, newtypes, None, False, images, output = self.log)
 
-            for url in tqdm(urls):
-                ao3.download(url)
+            self.progress(lambda url: ao3.download(url), urls )

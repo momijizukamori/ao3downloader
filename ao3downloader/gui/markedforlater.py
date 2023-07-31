@@ -1,58 +1,23 @@
+from ao3downloader.actions.markedforlater import MarkedForLaterAction
+from ao3downloader.gui.GuiAction import GuiAction
 from ao3downloader import strings
-from ao3downloader.actions import shared, shared_gui
-from ao3downloader.ao3 import Ao3
-from ao3downloader.fileio import FileOps
-from ao3downloader.repo import Repository
-import PySimpleGUI as sg
+from ao3downloader.gui.shared_gui import FiletypeWidget, ao3_login, images, series, Back, Ok
 
 
-def action():
-    with Repository() as repo:
-        fileops = FileOps()
+class MarkedForLaterGuiAction(GuiAction, MarkedForLaterAction):
+    key = 'm'
+    desc = strings.ACTION_DESCRIPTION_MARKED_FOR_LATER
 
-        filetypes = shared.download_types(fileops)
-        series = shared.series()
-        images = shared.images()
+    def __init__(self, settings: dict):
+        super().__init__(settings, "Save marked for later fics")
+        self.add_child(FiletypeWidget(self.fileops))
+        self.add_child(series())
+        self.add_child(images())
+        self.add_child(ao3_login())
 
-        shared.ao3_login(repo, fileops, True)
+    def buttons(self):
+        self.layout.append([Back(), Ok()])
 
-        link = shared.marked_for_later_link(fileops)
-        visited = shared.visited(fileops, filetypes)
-
-        print(strings.AO3_INFO_DOWNLOADING)
-
-        ao3 = Ao3(repo, fileops, filetypes, 0, series, images, True)
-        ao3.download(link, visited)
-
-
-def gui_action(metadata):
-    fileops = FileOps()
-    filetypes, filetype_handler = shared_gui.download_types(fileops)
-    images, images_handler = shared_gui.images()
-    series, series_handler = shared_gui.series()
-
-    def handler(event, values, window):
-        filetype_handler(event, values, window)
-        images_handler(event, values, window)
-        series_handler(event, values, window)
+    def handler(self, event, values, window):
         if event == 'OK':
-            with Repository() as repo:
-                fileops = FileOps()
-
-                shared_gui.handle_login(window.metadata, repo, force = True)
-
-                link = shared.marked_for_later_link(fileops)
-                visited = shared.visited(fileops, window.metadata['filetypes'])
-
-                print(strings.AO3_INFO_DOWNLOADING)
-
-                ao3 = Ao3(repo, fileops, window.metadata['filetypes'], 0, window.metadata['series'], window.metadata['images'], True)
-                ao3.download(link, visited)
-
-    layout = [filetypes, 
-              images,
-              series, 
-              [shared_gui.output()],
-              [sg.OK(), shared_gui.back()]]
-    window = sg.Window("Download marked for later", layout, metadata=metadata, finalize=True)
-    return window, handler
+            self.action()

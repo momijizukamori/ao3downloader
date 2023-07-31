@@ -1,70 +1,28 @@
+from ao3downloader.actions.ao3download import Ao3DownloadAction
+from ao3downloader.gui.GuiAction import GuiAction
 from ao3downloader import strings
-from ao3downloader.actions import shared, shared_gui
-from ao3downloader.ao3 import Ao3
-from ao3downloader.fileio import FileOps
-from ao3downloader.repo import Repository
-
-import PySimpleGUI as sg
+from ao3downloader.gui.shared_gui import FiletypeWidget, PagesWidget, LinkWidget, ao3_login, images, series, Back, Ok
 
 
-def action():
-    with Repository() as repo:
-        fileops = FileOps()
+class Ao3DownloadGuiAction(GuiAction, Ao3DownloadAction):
+    key = 'a'
+    desc = strings.ACTION_DESCRIPTION_AO3
 
-        filetypes = shared.download_types(fileops)
-        series = shared.series()
-        link = shared.link(fileops)
-        pages = shared.pages()
-        images = shared.images()
+    def __init__(self, settings: dict):
+        super().__init__(settings, "Download fics from link")
+        self.add_child(FiletypeWidget(self.fileops))
+        self.add_child(LinkWidget(self.fileops))
+        self.add_child(series())
+        self.add_child(images())
+        self.add_child(ao3_login())
+        self.add_child(PagesWidget())
 
-        shared.ao3_login(repo, fileops)
+    def buttons(self):
+        self.layout.append([Back(), Ok()])
 
-        visited = shared.visited(fileops, filetypes)
-
-        print(strings.AO3_INFO_DOWNLOADING)
-
-        ao3 = Ao3(repo, fileops, filetypes, pages, series, images)
-        ao3.download(link, visited)
-
-def gui_action(metadata):
-    fileops = FileOps()
-    layout = []
-    handlers = []
-
-    disable_ao3 = not shared_gui.can_login(metadata)
-    for widget, handler in [shared_gui.download_types(fileops), shared_gui.series(), shared_gui.link(fileops), shared_gui.pages(), shared_gui.images(), shared_gui.ao3_login(disable_ao3)]:
-        layout = layout + widget
-        handlers.append(handler)
-
-    layout = layout + [[shared_gui.output()],
-                    [shared_gui.back(), sg.OK(disabled=True)]]
-    window = sg.Window("Save links", layout, metadata=metadata, finalize=True)
-
-    def handler(event, values, window):
-        for widget_handler in handlers:
-            widget_handler(event, values, window)
-        
-        if values:
-            state = len(values.get("link", '')) == 0 and not values.get('prev_link', None)
+    def handler(self, event, values, window):
+        if event == 'link' or event == 'use_prev':
+            state = len(self.link()) == 0
             window['OK'].update(disabled=state)
-            
-            if event == 'OK':
-                with Repository() as repo:
-                    fileops = FileOps()
-
-                    pages = window.metadata['pages']
-                    series = window.metadata['series']
-                    images = window.metadata['images']
-                    link = window.metadata['link']
-                    filetypes = window.metadata['filetypes']
-
-                    shared_gui.handle_login(window.metadata, repo)
-
-                    visited = shared.visited(fileops, filetypes)
-
-                    print(strings.AO3_INFO_DOWNLOADING)
-
-                    ao3 = Ao3(repo, fileops, filetypes, pages, series, images)
-                    ao3.download(link, visited)
-
-    return window, handler
+        if event == 'OK':
+            self.action()

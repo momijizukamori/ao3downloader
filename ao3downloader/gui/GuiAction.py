@@ -99,10 +99,7 @@ class GuiAction(BaseAction):
         return self.get_value('filetypes', [])
 
     def update_types(self) -> list[str]:
-        return self.get_value('pages')
-
-    def update_folder(self) -> str:
-        return self.get_value('pages')
+        return self.get_value('update_filetypes')
 
     def pinboard_date(self) -> datetime | None:
         return self.get_value('date', None)
@@ -111,7 +108,7 @@ class GuiAction(BaseAction):
         return self.get_value('folder', '')
 
     def update_folder(self) -> str:
-        return self.get_value('update_folder', '')
+        return self.get_value('folder', '')
     
     def file_path(self) -> str:
         return self.get_value('path', '')

@@ -5,32 +5,33 @@ from ao3downloader.fileio import FileOps
 
 from ao3downloader.gui.enterlinks import EnterLinksGuiAction
 from ao3downloader.gui.GuiAction import GuiAction
-# from ao3downloader.actions import pinboarddownload
-# from ao3downloader.actions import updatefics
-# from ao3downloader.actions import redownload
-# from ao3downloader.actions import logvisualization
-# from ao3downloader.actions import updateseries
-# from ao3downloader.actions import getlinks
-# from ao3downloader.actions import markedforlater
-# from ao3downloader.actions import enterlinks
-# from ao3downloader.actions import ignorelist
-# from ao3downloader.actions import creds
+from ao3downloader.gui.pinboarddownload import PinboardDownloadGuiAction
+from ao3downloader.gui.updatefics import UpdateFicsGuiAction
+from ao3downloader.gui.redownload import RedownloadGuiAction
+from ao3downloader.gui.logvisualization import LogVisualizationGuiAction
+from ao3downloader.gui.updateseries import UpdateSeriesGuiAction
+from ao3downloader.gui.getlinks import GetLinksGuiAction
+from ao3downloader.gui.markedforlater import MarkedForLaterGuiAction
+from ao3downloader.gui.ignorelist import IgnoreListGuiAction
+from ao3downloader.gui.creds import CredsGuiAction
+from ao3downloader.gui.ao3download import Ao3DownloadGuiAction
 
 
 QUIT_ACTION = 'q'
 MENU_ACTION = 'd'
 
 ACTIONS = [
-    # Ao3DownloadCliAction(),
-    # PinboardDownloadCliAction(),
-    # UpdateFicsCliAction(),
-    # RedownloadCliAction(),
-    # LogVisualizationCliAction(),
-    # UpdateSeriesCliAction(),
-    # GetLinksCliAction(),
-    # MarkedForLaterCliAction(),
+    CredsGuiAction(),
+    Ao3DownloadGuiAction(),
+    PinboardDownloadGuiAction(),
+    UpdateFicsGuiAction(),
+    RedownloadGuiAction(),
+    LogVisualizationGuiAction(),
+    UpdateSeriesGuiAction(),
+    GetLinksGuiAction(),
+    MarkedForLaterGuiAction(),
     EnterLinksGuiAction,
-    # IgnoreListCliAction(),
+    IgnoreListGuiAction(),
     ]
 
 ACTIONS_MAP = {

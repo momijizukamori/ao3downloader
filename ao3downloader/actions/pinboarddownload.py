@@ -3,7 +3,7 @@ from ao3downloader.actions.shared import api_token
 from ao3downloader.actions.BaseAction import BaseAction
 from ao3downloader.ao3 import Ao3
 from ao3downloader.repo import Repository
-from tqdm import tqdm
+
 
 class PinboardDownloadAction:
     def action(self: BaseAction):
